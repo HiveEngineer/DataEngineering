@@ -8,22 +8,12 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
-strategy:
-  matrix:
-    Python27:
-      python.version: '2.7'
-    Python35:
-      python.version: '3.5'
-    Python36:
-      python.version: '3.6'
-    Python37:
-      python.version: '3.7'
 
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+    versionSpec: '3.8'
+  displayName: 'Use Python 3.8'
 
 - script: |
     python -m pip install --upgrade pip
@@ -31,6 +21,12 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+    python setup.py bdist_wheel
+  displayName: 'Build Python Wheel'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: 'dist' 
+    artifactName: 'wheel'
+    publishLocation: 'Container'
+
